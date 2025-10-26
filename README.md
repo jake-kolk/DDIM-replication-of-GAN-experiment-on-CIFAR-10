@@ -28,7 +28,7 @@ I created a DCGAN model for mimicking the data distribution of CIFAR-10 dataset
 
 Alright this is the stuff written by jake.
 
-#### How to generate images  
+### How to generate images  
 This is really easy, just run generate.py.  
 Images are saved to generated_samples, output directory is from origonal author.  
 I have not tested training because it would probably take MANY hours without a GPU.  
