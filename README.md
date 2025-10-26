@@ -33,3 +33,7 @@ This is really easy, just run generate.py.
 Images are saved to generated_samples, output directory is from origonal author.  
 I have not tested training because it would probably take MANY hours without a GPU.  
 
+To create the noisy images (for testing and sanity checks), run:
+```bash
+python -m diffusion.make_noisy_images
+```
