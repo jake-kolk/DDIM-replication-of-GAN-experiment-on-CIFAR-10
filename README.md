@@ -24,3 +24,12 @@ increasing the complexity of the generator does not necessarily improve the imag
 Until we identify the bottleneck and know how to train GANs more effective, DCGAN
 remains a good start point for a new project.
 I created a DCGAN model for mimicking the data distribution of CIFAR-10 dataset
+
+
+Alright this is the stuff written by jake.
+
+#### How to generate images  
+This is really easy, just run generate.py.  
+Images are saved to generated_samples, output directory is from origonal author.  
+I have not tested training because it would probably take MANY hours without a GPU.  
+
