@@ -4,5 +4,4 @@ numpy
 pillow
 tqdm
 matplotlib
-time
 psutil
