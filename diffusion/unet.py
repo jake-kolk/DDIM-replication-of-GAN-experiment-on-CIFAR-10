@@ -162,9 +162,10 @@ class UNetModel(nn.Module):
             block2 = ResidualBlock(out_ch + skip_ch1, out_ch, time_dim)
             use_attn = current_res in attn_resolutions
             attn = AttentionBlock(out_ch) if use_attn else nn.Identity()
-            up = Upsample(out_ch, base_channels * channel_mults[idx - 1]) if idx > 0 else nn.Identity()
+            next_in_ch = base_channels * channel_mults[idx - 1] if idx > 0 else base_channels
+            up = Upsample(out_ch, next_in_ch) if idx > 0 else nn.Identity()
             self.ups.append(nn.ModuleList([block1, block2, attn, up]))
-            in_ch = out_ch
+            in_ch = next_in_ch
             if idx > 0:
                 current_res *= 2
 
