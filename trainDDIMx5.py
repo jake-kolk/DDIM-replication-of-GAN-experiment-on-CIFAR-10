@@ -20,7 +20,7 @@ def run_training():
         "python", "train_ddim.py",
         "--epochs", str(EPOCHS),
         "--batch-size", str(BATCH_SIZE),
-        "--ckpt-dir", "weights/ddim",
+        "--ckpt-dir", f"weights/ddim_{i}",
         "--sample-dir", "generated_samples_ddim"
     ]
 
