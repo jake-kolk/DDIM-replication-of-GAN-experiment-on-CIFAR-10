@@ -4,6 +4,4 @@ numpy
 pillow
 tqdm
 matplotlib
-subprocess
-time
 psutil
