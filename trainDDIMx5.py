@@ -9,21 +9,13 @@ BATCH_SIZE = 128
 EPOCHS = 50
 
 OUTPUT_FILE = "training_results.txt"
-i = 1
+
 
 def ordinal(n):
     return ["once", "twice", "three times", "four times", "five times"][n-1]
 
 
 def run_training():
-    command = [
-        "python", "train_ddim.py",
-        "--epochs", str(EPOCHS),
-        "--batch-size", str(BATCH_SIZE),
-        "--ckpt-dir", f"weights/ddim_{i}",
-        "--sample-dir", "generated_samples_ddim"
-    ]
-
     results = []
 
     # open the file fresh
@@ -31,6 +23,13 @@ def run_training():
         f.write("DDIM Training Performance Results\n")
         f.write("=================================\n\n")
     for i in range(1, 6):
+        command = [
+        "python", "train_ddim.py",
+        "--epochs", str(EPOCHS),
+        "--batch-size", str(BATCH_SIZE),
+        "--ckpt-dir", f"weights/ddim_{i}",
+        "--sample-dir", "generated_samples_ddim"
+        ]
         print(f"\n=== Starting training run {i} ===")
 
         # Time tracking
