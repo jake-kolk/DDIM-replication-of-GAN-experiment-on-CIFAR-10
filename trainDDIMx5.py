@@ -9,7 +9,7 @@ BATCH_SIZE = 128
 EPOCHS = 50
 
 OUTPUT_FILE = "training_results.txt"
-
+i = 1
 
 def ordinal(n):
     return ["once", "twice", "three times", "four times", "five times"][n-1]
@@ -30,7 +30,6 @@ def run_training():
     with open(OUTPUT_FILE, "w") as f:
         f.write("DDIM Training Performance Results\n")
         f.write("=================================\n\n")
-
     for i in range(1, 6):
         print(f"\n=== Starting training run {i} ===")
 
