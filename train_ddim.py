@@ -12,6 +12,9 @@ from torchvision import datasets, transforms
 from torchvision.utils import save_image
 from tqdm import tqdm
 
+print(torch.cuda.is_available())  # should print True these 3 lines are to test gpu recognision
+print(torch.cuda.current_device())
+print(torch.cuda.get_device_name(0))
 from diffusion import DDIMSampler, DiffusionSchedule, UNetModel
 
 # ------------------ new imports for mixed precision ------------------
