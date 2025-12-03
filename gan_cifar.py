@@ -16,8 +16,7 @@ import torchvision.utils as vutils
 
 cudnn.benchmark = True
 
-CHECKPOINT_DIR = "weights"
-OUTPUT_DIR = "output"
+
 LEARNING_RATE = 2e-4
 BETAS = (0.5, 0.999)
 
@@ -37,7 +36,8 @@ def parse_args():
     parser.add_argument("--sample-batch-size", type=int, default=64)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--resumeG", type=str, default="", help="path to generator checkpoint")
-    parser.add_argument("--resumeD", type=str, default="", help="path to discriminator checkpoint")
+    parser.add_argument("--resumeD", type=str, default="", help="path to discriminator checkpoint"),
+    parser.add_argument("--outputDir", type=str, default="gan", help = "path to store weights and output")
     return parser.parse_args()
 
 
@@ -136,7 +136,7 @@ def build_dataloader(args):
     )
 
 
-def save_outputs(real, fake, epoch):
+def save_outputs(real, fake, epoch, OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     vutils.save_image(real, os.path.join(OUTPUT_DIR, 'real_samples.png'), normalize=True)
     vutils.save_image(
@@ -146,7 +146,7 @@ def save_outputs(real, fake, epoch):
     )
 
 
-def save_checkpoints(netG, netD, epoch):
+def save_checkpoints(netG, netD, epoch, CHECKPOINT_DIR):
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     torch.save(netG.state_dict(), os.path.join(CHECKPOINT_DIR, f'netG_epoch_{epoch}.pth'))
     torch.save(netD.state_dict(), os.path.join(CHECKPOINT_DIR, f'netD_epoch_{epoch}.pth'))
@@ -155,6 +155,9 @@ def save_checkpoints(netG, netD, epoch):
 def main():
     args = parse_args()
     set_seed(args.seed)
+
+    CHECKPOINT_DIR = str(args.outputDir + "/weights")
+    OUTPUT_DIR = str(args.outputDir + "/output")
 
     dataloader = build_dataloader(args)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -218,9 +221,9 @@ def main():
             if i % 100 == 0:
                 print('saving the output')
                 fake_samples = netG(fixed_noise)
-                save_outputs(real_cpu, fake_samples, epoch)
+                save_outputs(real_cpu, fake_samples, epoch, OUTPUT_DIR)
 
-            save_checkpoints(netG, netD, epoch)
+            save_checkpoints(netG, netD, epoch, CHECKPOINT_DIR)
             epoch_time = time.perf_counter() - epoch_start
             print(f"Epoch {epoch+1}/{args.epochs} finished in {epoch_time/60:.2f} min ({epoch_time:.1f} s)")
 
