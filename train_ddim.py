@@ -14,6 +14,8 @@ from tqdm import tqdm
 
 from diffusion import DDIMSampler, DiffusionSchedule, UNetModel
 
+# ------------------ new imports for mixed precision ------------------
+from torch.cuda.amp import autocast, GradScaler
 
 def _parse_channel_mults(raw: str) -> tuple[int, ...]:
     return tuple(int(x) for x in raw.split(","))
@@ -84,6 +86,9 @@ def train(args):
     schedule = DiffusionSchedule(T=args.timesteps, device=device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, betas=(0.9, 0.999))
 
+    # ------------------ new: initialize GradScaler ------------------
+    scaler = GradScaler()
+
     start_epoch = 0
     global_step = 0
     if args.resume:
@@ -109,17 +114,21 @@ def train(args):
             noise = torch.randn_like(images)
             noisy, noise = schedule.add_noise(images, t, noise)
 
-            preds = model(noisy, t)
-            loss = F.mse_loss(preds, noise)
-            loss_scaled = loss / accum_steps
+            # ------------------ mixed precision ------------------
+            with autocast():
+                preds = model(noisy, t)
+                loss = F.mse_loss(preds, noise)
+                loss_scaled = loss / accum_steps
 
-            loss_scaled.backward()
+            scaler.scale(loss_scaled).backward()
 
             if (i + 1) % accum_steps == 0:
                 if args.grad_clip > 0:
+                    scaler.unscale_(optimizer)
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
 
-                optimizer.step()
+                scaler.step(optimizer)
+                scaler.update()
                 optimizer.zero_grad()
                 global_step += 1
 
