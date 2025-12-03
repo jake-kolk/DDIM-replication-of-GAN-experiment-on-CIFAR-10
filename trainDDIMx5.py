@@ -5,7 +5,7 @@ import psutil
 # Number of images in CIFAR-10 training set
 TRAIN_DATASET_SIZE = 50000
 
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 EPOCHS = 50
 
 OUTPUT_FILE = "training_results.txt"
@@ -28,7 +28,8 @@ def run_training():
         "--epochs", str(EPOCHS),
         "--batch-size", str(BATCH_SIZE),
         "--ckpt-dir", f"weights/ddim_{i}",
-        "--sample-dir", "generated_samples_ddim"
+        "--sample-dir", "generated_samples_ddim",
+        "--accum-steps", "4"
         ]
         print(f"\n=== Starting training run {i} ===")
 

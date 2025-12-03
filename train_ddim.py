@@ -99,19 +99,31 @@ def train(args):
         epoch_start = time.perf_counter()
         model.train()
         pbar = tqdm(dl, desc=f"Epoch {epoch+1}/{args.epochs}")
-        for images, _ in pbar:
+
+        accum_steps = max(1, args.accum_steps)
+        optimizer.zero_grad()
+
+        for i, (images, _) in enumerate(pbar):
             images = images.to(device)
             t = torch.randint(0, schedule.T, (images.size(0),), device=device, dtype=torch.long)
             noise = torch.randn_like(images)
             noisy, noise = schedule.add_noise(images, t, noise)
+
             preds = model(noisy, t)
             loss = F.mse_loss(preds, noise)
-            optimizer.zero_grad()
-            loss.backward()
-            if args.grad_clip > 0:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
-            optimizer.step()
-            global_step += 1
+            loss_scaled = loss / accum_steps
+
+            loss_scaled.backward()
+
+            if (i + 1) % accum_steps == 0:
+                if args.grad_clip > 0:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+
+                optimizer.step()
+                optimizer.zero_grad()
+                global_step += 1
+
+            # show the actual (unscaled) loss in the progress bar
             pbar.set_postfix(loss=f"{loss.item():.4f}")
 
         if (epoch + 1) % args.sample_every == 0:
@@ -143,6 +155,8 @@ def parse_args():
     parser.add_argument("--sample-dir", type=str, default="generated_samples_ddim")
     parser.add_argument("--ckpt-dir", type=str, default="weights/ddim")
     parser.add_argument("--resume", type=str, default="")
+    parser.add_argument("--accum-steps", type=int, default=1)
+
     return parser.parse_args()
 
 
