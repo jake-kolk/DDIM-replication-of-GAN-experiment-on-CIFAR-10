@@ -28,6 +28,12 @@ I created a DCGAN model for mimicking the data distribution of CIFAR-10 dataset
 
 Alright this is the stuff written by Jake + Isaiah.
 
+## Download Dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
 ## DCGAN experiment
 
 ### Train the GAN
