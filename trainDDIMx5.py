@@ -24,7 +24,7 @@ def run_training():
         f.write("=================================\n\n")
     for i in range(1, 6):
         command = [
-        "python", "train_ddim.py",
+        "python3.10", "train_ddim.py",
         "--epochs", str(EPOCHS),
         "--batch-size", str(BATCH_SIZE),
         "--ckpt-dir", f"weights/ddim_{i}",
