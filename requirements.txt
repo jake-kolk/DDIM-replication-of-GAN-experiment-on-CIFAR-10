@@ -6,3 +6,5 @@ tqdm
 matplotlib
 psutil
 os
+argparse
+scipy
