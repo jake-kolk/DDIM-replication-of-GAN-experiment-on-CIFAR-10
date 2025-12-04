@@ -3,6 +3,7 @@ import argparse
 import os
 import random
 import time
+import sys
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -16,10 +17,17 @@ import torchvision.utils as vutils
 
 cudnn.benchmark = True
 
+LOGFILE = "ganlog.txt"
+
+def log(*args, **kwargs):
+    """Prints to console AND appends to ganlog.txt."""
+    message = " ".join(str(a) for a in args)
+    print(message, **kwargs)
+    with open(LOGFILE, "a") as f:
+        f.write(message + "\n")
 
 LEARNING_RATE = 2e-4
 BETAS = (0.5, 0.999)
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train DCGAN on CIFAR-10")
@@ -37,18 +45,16 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--resumeG", type=str, default="", help="path to generator checkpoint")
     parser.add_argument("--resumeD", type=str, default="", help="path to discriminator checkpoint"),
-    parser.add_argument("--outputDir", type=str, default="gan", help = "path to store weights and output")
+    parser.add_argument("--outputDir", type=str, default="gan", help="path to store weights and output")
     return parser.parse_args()
-
 
 def set_seed(seed: int):
     manual_seed = seed if seed != 0 else random.randint(1, 10000)
-    print("Random Seed: ", manual_seed)
+    log("Random Seed:", manual_seed)
     random.seed(manual_seed)
     torch.manual_seed(manual_seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(manual_seed)
-
 
 def weights_init(m):
     classname = m.__class__.__name__
@@ -57,7 +63,6 @@ def weights_init(m):
     elif classname.find('BatchNorm') != -1:
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
-
 
 class Generator(nn.Module):
     def __init__(self, ngpu: int, nz: int = 100, ngf: int = 64, nc: int = 3):
@@ -85,7 +90,6 @@ class Generator(nn.Module):
             return nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         return self.main(input)
 
-
 class Discriminator(nn.Module):
     def __init__(self, ngpu: int, ndf: int = 64, nc: int = 3):
         super().__init__()
@@ -93,15 +97,19 @@ class Discriminator(nn.Module):
         self.main = nn.Sequential(
             nn.Conv2d(nc, ndf, 4, 2, 1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
+
             nn.Conv2d(ndf, ndf * 2, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 2),
             nn.LeakyReLU(0.2, inplace=True),
+
             nn.Conv2d(ndf * 2, ndf * 4, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 4),
             nn.LeakyReLU(0.2, inplace=True),
+
             nn.Conv2d(ndf * 4, ndf * 8, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 8),
             nn.LeakyReLU(0.2, inplace=True),
+
             nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
             nn.Sigmoid(),
         )
@@ -112,7 +120,6 @@ class Discriminator(nn.Module):
         else:
             output = self.main(input)
         return output.view(-1, 1).squeeze(1)
-
 
 def build_dataloader(args):
     dataset = dset.CIFAR10(
@@ -135,7 +142,6 @@ def build_dataloader(args):
         pin_memory=pin,
     )
 
-
 def save_outputs(real, fake, epoch, OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     vutils.save_image(real, os.path.join(OUTPUT_DIR, 'real_samples.png'), normalize=True)
@@ -145,19 +151,17 @@ def save_outputs(real, fake, epoch, OUTPUT_DIR):
         normalize=True,
     )
 
-
 def save_checkpoints(netG, netD, epoch, CHECKPOINT_DIR):
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     torch.save(netG.state_dict(), os.path.join(CHECKPOINT_DIR, f'netG_epoch_{epoch}.pth'))
     torch.save(netD.state_dict(), os.path.join(CHECKPOINT_DIR, f'netD_epoch_{epoch}.pth'))
 
-
 def main():
     args = parse_args()
     set_seed(args.seed)
 
-    CHECKPOINT_DIR = str(args.outputDir + "/weights")
-    OUTPUT_DIR = str(args.outputDir + "/output")
+    CHECKPOINT_DIR = os.path.join(args.outputDir, "weights")
+    OUTPUT_DIR = os.path.join(args.outputDir, "output")
 
     dataloader = build_dataloader(args)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -167,13 +171,13 @@ def main():
     netG.apply(weights_init)
     if args.resumeG:
         netG.load_state_dict(torch.load(args.resumeG, map_location=device))
-    print(netG)
+    log(netG)
 
     netD = Discriminator(ngpu, args.ndf).to(device)
     netD.apply(weights_init)
     if args.resumeD:
         netD.load_state_dict(torch.load(args.resumeD, map_location=device))
-    print(netD)
+    log(netD)
 
     criterion = nn.BCELoss()
     optimizerD = optim.Adam(netD.parameters(), lr=LEARNING_RATE, betas=(args.beta1, args.beta2))
@@ -184,6 +188,7 @@ def main():
     fake_label = 0
 
     run_start = time.perf_counter()
+
     for epoch in range(args.epochs):
         epoch_start = time.perf_counter()
         for i, data in enumerate(dataloader, 0):
@@ -215,21 +220,22 @@ def main():
             D_G_z2 = output.mean().item()
             optimizerG.step()
 
-            print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f D(x): %.4f D(G(z)): %.4f / %.4f'
-                  % (epoch, args.epochs, i, len(dataloader), errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
+            log('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f D(x): %.4f D(G(z)): %.4f / %.4f'
+                % (epoch, args.epochs, i, len(dataloader),
+                   errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
 
             if i % 100 == 0:
-                print('saving the output')
+                log('Saving output images')
                 fake_samples = netG(fixed_noise)
                 save_outputs(real_cpu, fake_samples, epoch, OUTPUT_DIR)
 
-            save_checkpoints(netG, netD, epoch, CHECKPOINT_DIR)
-            epoch_time = time.perf_counter() - epoch_start
-            print(f"Epoch {epoch+1}/{args.epochs} finished in {epoch_time/60:.2f} min ({epoch_time:.1f} s)")
+        save_checkpoints(netG, netD, epoch, CHECKPOINT_DIR)
 
-            total_time = time.perf_counter() - run_start
-            print(f"Training completed in {total_time/3600:.2f} h ({total_time/60:.2f} min)")
+        epoch_time = time.perf_counter() - epoch_start
+        log(f"Epoch {epoch+1}/{args.epochs} finished in {epoch_time/60:.2f} min ({epoch_time:.1f} s)")
 
+        total_time = time.perf_counter() - run_start
+        log(f"Training time so far: {total_time/3600:.2f} h ({total_time/60:.2f} min)")
 
 if __name__ == "__main__":
     main()
