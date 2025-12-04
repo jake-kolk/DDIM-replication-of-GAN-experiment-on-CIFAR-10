@@ -2,3 +2,5 @@ weights/
 venv/
 data/
 .venv/
+ddim_samples/
+gan_samples/
