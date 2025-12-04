@@ -2,20 +2,20 @@ DDIM Training Performance Results
 =================================
 
 Run 1:
-  Wall time:  12715.62 sec
+  Wall time:  1892.80 sec
   CPU time:   0.00 sec
   Memory Δ:   0.00 MB
-  Throughput: 196.61 samples/sec
+  Throughput: 660.40 samples/sec
 
 Run 2:
-  Wall time:  12729.48 sec
+  Wall time:  1900.43 sec
   CPU time:   0.00 sec
   Memory Δ:   0.00 MB
-  Throughput: 196.39 samples/sec
+  Throughput: 657.75 samples/sec
 
 Run 3:
-  Wall time:  12717.83 sec
+  Wall time:  1900.13 sec
   CPU time:   0.00 sec
   Memory Δ:   0.00 MB
-  Throughput: 196.57 samples/sec
+  Throughput: 657.85 samples/sec
 

@@ -37,12 +37,12 @@
       "main.12.weight"
     ]
   },
-  "ddim_sampling_time_s": 3.474037785999826,
+  "ddim_sampling_time_s": 1373.572804312993,
   "ddim_samples_saved_dir": "comparison_results/ddim_samples",
-  "gan_sampling_time_s": 0.10448547700070776,
+  "gan_sampling_time_s": 11.865494706988102,
   "gan_samples_saved_dir": "comparison_results/gan_samples",
-  "ddim_per_image_s": 0.3474037785999826,
-  "gan_per_image_s": 0.010448547700070776,
-  "fid_ddim": 278.3407046111529,
-  "fid_gan": 323.6403259663314
+  "ddim_per_image_s": 0.1373572804312993,
+  "gan_per_image_s": 0.00118654947069881,
+  "fid_ddim": 28.300814492769007,
+  "fid_gan": 65.63934462930035
 }

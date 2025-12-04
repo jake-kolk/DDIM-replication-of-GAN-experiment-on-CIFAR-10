@@ -1,0 +1,15 @@
+nohup: ignoring input
+  File "/root/DDIM-replication-of-GAN-experiment-on-CIFAR-10/gan_cifar.py", line 33
+    >>>>>>> parent of 510a29f (changed gitignore to track weights)
+                        ^
+SyntaxError: invalid decimal literal
+
+=== Starting training run 1 ===
+Traceback (most recent call last):
+  File "/root/DDIM-replication-of-GAN-experiment-on-CIFAR-10/trainGANx5.py", line 91, in <module>
+    run_training()
+  File "/root/DDIM-replication-of-GAN-experiment-on-CIFAR-10/trainGANx5.py", line 47, in run_training
+    subprocess.run(command, check=True)
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python3.10', 'gan_cifar.py', '--epochs', '25', '--batch-size', '128', '--outputDir', 'gan_1']' returned non-zero exit status 1.
