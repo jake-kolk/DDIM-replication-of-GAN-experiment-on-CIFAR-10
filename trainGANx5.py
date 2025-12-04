@@ -18,8 +18,6 @@ def ordinal(n):
 
 def run_training():
     results = []
-    # opens venv
-    venv_python = os.path.join("venv", "Scripts", "python3.10.exe")  # Windows path
 
     # open the file fresh
     with open(OUTPUT_FILE, "w") as f:
@@ -30,7 +28,7 @@ def run_training():
 	# --epochs 25 \
 	# --batch-size 128
         command = [
-        venv_python, "gan_cifar.py",
+        "python3.10", "gan_cifar.py",
         "--epochs", str(EPOCHS),
         "--batch-size", str(BATCH_SIZE),
         "--outputDir", f"gan_{i}",
