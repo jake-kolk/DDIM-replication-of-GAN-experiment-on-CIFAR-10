@@ -23,6 +23,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import datasets, transforms, utils
 from torchvision.utils import save_image
+from torchvision.models import inception_v3, Inception_V3_Weights
 
 # --- Replace these imports with your project modules (same names you used before) ---
 # from diffusion import DDIMSampler, DiffusionSchedule, UNetModel
@@ -56,11 +57,14 @@ def get_inception_model(device: torch.device):
     Returns an InceptionV3 model adapted to produce 2048-d pool features.
     We set model.fc = Identity so model(x) returns the pooled features.
     """
-    m = inception_v3(pretrained=True, aux_logits=False)
-    # Replace final fc so forward returns the pooled features (2048-d)
+
+
+    weights = Inception_V3_Weights.IMAGENET1K_V1
+    m = inception_v3(weights=weights, aux_logits=True)
     m.fc = nn.Identity()
     m.eval()
     m.to(device)
+
     return m
 
 
