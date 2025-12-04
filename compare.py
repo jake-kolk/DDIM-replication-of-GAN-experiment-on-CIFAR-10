@@ -6,7 +6,7 @@ Generates samples from a trained DDIM and a trained GAN, times sampling,
 computes FID (Frechet Inception Distance) against a real dataset, and writes a report.
 
 Usage example:
-python compare.py --ddim-checkpoint weights/ddim_1/ddim_epoch_050.pth --gan-checkpoint weights/gan_1/netG_epoch_24.pth --num-samples 10 --batch-size 64 --output-dir comparison_results --real-data data/cifar-10-batches-py
+python3.10 compare.py --ddim-checkpoint weights/ddim_1/ddim_epoch_050.pth --gan-checkpoint weights/gan_1/weights/netG_epoch_24.pth --num-samples 10 --batch-size 64 --output-dir comparison_results --real-data cifar10
 """
 
 import argparse
@@ -249,33 +249,76 @@ def sample_gan(generator_class, gan_checkpoint_path: str, args, device: torch.de
 # -------------------------
 # Real dataset loader
 # -------------------------
+# def get_real_dataloader(args, image_size: int, batch_size: int):
+#     """
+#     By default, uses CIFAR-10 test set (32x32). You can also specify a folder path
+#     (args.real_data pointing to a directory of images).
+#     """
+#     if args.real_data == "cifar10":
+#         transform = transforms.Compose([
+#             transforms.Resize(image_size),
+#             transforms.CenterCrop(image_size),
+#             transforms.ToTensor(),  # yields [0,1]
+#             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),  # to [-1,1]
+#         ])
+#         ds = datasets.CIFAR10(root="./data", train=False, download=True, transform=transform)
+#         loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+#         return loader
+#     else:
+#         # assume real_data is a directory of images
+#         transform = transforms.Compose([
+#             transforms.Resize(image_size),
+#             transforms.CenterCrop(image_size),
+#             transforms.ToTensor(),
+#             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+#         ])
+#         ds = datasets.ImageFolder(root=args.real_data, transform=transform)
+#         loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+#         return loader
 def get_real_dataloader(args, image_size: int, batch_size: int):
     """
-    By default, uses CIFAR-10 test set (32x32). You can also specify a folder path
-    (args.real_data pointing to a directory of images).
+    Returns a DataLoader for real images.
+    
+    Automatically uses CIFAR-10 if:
+        - args.real_data is "cifar10" OR
+        - args.real_data points to a CIFAR-10 batch folder (contains files like 'data_batch_1')
+    
+    Otherwise, assumes args.real_data is a directory of images organized in subfolders per class.
     """
-    if args.real_data == "cifar10":
-        transform = transforms.Compose([
-            transforms.Resize(image_size),
-            transforms.CenterCrop(image_size),
-            transforms.ToTensor(),  # yields [0,1]
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),  # to [-1,1]
-        ])
+    transform = transforms.Compose([
+        transforms.Resize(image_size),
+        transforms.CenterCrop(image_size),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    ])
+
+    real_data_path = str(args.real_data).lower() if args.real_data else ""
+
+    # Case 1: CIFAR-10
+    if real_data_path == "cifar10":
         ds = datasets.CIFAR10(root="./data", train=False, download=True, transform=transform)
-        loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
-        return loader
-    else:
-        # assume real_data is a directory of images
-        transform = transforms.Compose([
-            transforms.Resize(image_size),
-            transforms.CenterCrop(image_size),
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-        ])
-        ds = datasets.ImageFolder(root=args.real_data, transform=transform)
-        loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+        loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False,
+                                             num_workers=4, pin_memory=True)
         return loader
 
+    # Case 2: User pointed to a folder — check if it's CIFAR-10 batch folder
+    path = Path(args.real_data)
+    if path.exists() and any(f.name.startswith("data_batch") for f in path.iterdir()):
+        # Load CIFAR-10 via the torchvision dataset (convert folder to proper root)
+        ds = datasets.CIFAR10(root="./data", train=False, download=True, transform=transform)
+        loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False,
+                                             num_workers=4, pin_memory=True)
+        return loader
+
+    # Case 3: Standard ImageFolder (subfolders per class)
+    if path.exists() and any(p.is_dir() for p in path.iterdir()):
+        ds = datasets.ImageFolder(root=args.real_data, transform=transform)
+        loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False,
+                                             num_workers=4, pin_memory=True)
+        return loader
+
+    # If none of the above, raise an error
+    raise FileNotFoundError(f"Cannot find valid image dataset at {args.real_data}")
 
 # -------------------------
 # Main
