@@ -40,28 +40,30 @@ def count_existing(prefix: str, suffix: str, directory: Path) -> int:
     return len(matches)
 
 
-def sample_batches(model, schedule, args, device: torch.device):
+def sample_single_images(model, schedule, args, device: torch.device):
     sampler = DDIMSampler(model, schedule, eta=DDIM_ETA)
-    remaining = args.num_images
     out_dir = make_output_dir(args.output_dir)
-    counter = count_existing("ddim_batch_", ".png", out_dir) + 1
+    counter = count_existing("ddim_", ".png", out_dir) + 1
+    
     total_start = time.perf_counter()
-    generated = 0
 
-    while remaining > 0:
-        batch = min(args.batch_size, remaining)
-        batch_start = time.perf_counter()
-        samples = sampler.sample((batch, 3, args.image_size, args.image_size), num_steps=args.num_steps)
-        filename = out_dir / f"ddim_batch_{counter:03d}.png"
-        nrow = min(8, batch)
-        save_image(samples, filename.as_posix(), nrow=nrow, normalize=True, value_range=(-1, 1))
-        batch_time = time.perf_counter() - batch_start
-        generated += batch
-        print(f"Saved {batch} samples to {filename.name} in {batch_time:.2f} s")
-        remaining -= batch
+    for i in range(args.num_images):
+        start = time.perf_counter()
+        
+        # Generate ONE image at a time
+        sample = sampler.sample((1, 3, args.image_size, args.image_size), num_steps=args.num_steps)
+        sample = sample.squeeze(0)  # remove batch dim
+
+        filename = out_dir / f"ddim_{counter:04d}.png"
+        save_image(sample, filename.as_posix(), normalize=True, value_range=(-1, 1))
+
+        dt = time.perf_counter() - start
+        print(f"Saved image {filename.name} in {dt:.2f}s")
+
         counter += 1
+
     total_time = time.perf_counter() - total_start
-    print(f"Generated {generated} images across {counter-1} files in {total_time/60:.2f} min ({total_time:.1f} s)")
+    print(f"Generated {args.num_images} images in {total_time:.1f}s ({total_time/60:.2f} min)")
 
 
 def parse_args():
@@ -87,7 +89,7 @@ def main():
     model = build_model(config, device)
     model.load_state_dict(state["model"])
     model.eval()
-    sample_batches(model, schedule, args, device)
+    sample_single_images(model, schedule, args, device)
     total_time = time.perf_counter() - overall_start
     print(f"ddim_generate.py finished in {total_time/60:.2f} min ({total_time:.1f} s). Outputs: {args.output_dir}")
 

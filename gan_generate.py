@@ -3,13 +3,14 @@ import time
 
 import torch
 import torchvision.utils as vutils
-from gan_cifar import Generator  # make sure this matches your filename
+from gan_cifar import Generator  # ensure correct filename
 
 # Pick device (GPU if available)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main():
     overall_start = time.perf_counter()
+
     # Initialize generator
     netG = Generator(ngpu=1).to(device)
 
@@ -18,25 +19,30 @@ def main():
     netG.eval()
     print("Loaded trained generator weights")
 
-    # Generate random noise (100-D latent vectors)
-    noise = torch.randn(64, 100, 1, 1, device=device)
+    # Generate a **single** 100-D latent vector
+    noise = torch.randn(1, 100, 1, 1, device=device)
 
-    # Generate fake images
+    # Generate fake image
     with torch.no_grad():
         sample_start = time.perf_counter()
-        fake_images = netG(noise).detach().cpu()
+        fake_image = netG(noise).detach().cpu()
         sample_time = time.perf_counter() - sample_start
-        print(f"Sampling 64 images took {sample_time:.3f} s")
+        print(f"Sampling 1 image took {sample_time:.3f} s")
 
     output_dir = "generated_samples"
     os.makedirs(output_dir, exist_ok=True)
 
-    # Count existing generated images to increment name
-    existing = [f for f in os.listdir(output_dir) if f.startswith("generated_image(") and f.endswith(").png")]
+    # Count existing images to increment name
+    existing = [
+        f for f in os.listdir(output_dir)
+        if f.startswith("generated_image(") and f.endswith(").png")
+    ]
     next_index = len(existing) + 1
 
     filename = os.path.join(output_dir, f"generated_image({next_index}).png")
-    vutils.save_image(fake_images, filename, normalize=True, value_range=(-1, 1))
+
+    # Save single image — no grid
+    vutils.save_image(fake_image[0], filename, normalize=True, value_range=(-1, 1))
 
     total_time = time.perf_counter() - overall_start
     print(f"Saved new image as: {filename}")
