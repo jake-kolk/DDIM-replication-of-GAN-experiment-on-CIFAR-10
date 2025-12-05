@@ -1,69 +1,48 @@
-DISCLAMER: These run times GAN are not exact, I had some parallel tasks running for some of the later training runs so I just put some data that looked about right based on the training runs 
-with no parallel tasks. The precision of these numbers is not important, we are just seeing AROUND how fast training is from one to the other. All other data is accurate unless 
-said otherwise.
+DISCLAMER: GAN results after run 2 are not accurate. There was parallel tasks running so the training time 
+is longer than it should be. Generally training time is very similar so the first run is about 
+what it took for all of them if they were allowed to use the entire GPU.
 
 GAN Training Performance Results
-=================================
+=========== SUMMARY ===========
 
 Run 1:
   Wall time:  1892.80 sec
-  CPU time:   0.00 sec
-  Memory Δ:   0.00 MB
   Throughput: 660.40 samples/sec
 
 Run 2:
   Wall time:  1900.43 sec
-  CPU time:   0.00 sec
-  Memory Δ:   0.00 MB
   Throughput: 657.75 samples/sec
 
 Run 3:
-  Wall time:  1895.13 sec
-  CPU time:   0.00 sec
-  Memory Δ:   0.00 MB
+  Wall time:  1900.13 sec
   Throughput: 657.85 samples/sec
 
 Run 4:
-  Wall time:  1900.26 sec
-  CPU time:   0.00 sec
-  Memory Δ:   0.00 MB
-  Throughput: 675.73 samples/sec
+  Wall time:  2076.26 sec
+  Throughput: 602.05 samples/sec
 
 Run 5:
-  Wall time:  1901.41 sec
-  CPU time:   0.00 sec
-  Memory Δ:   0.00 MB
-  Throughput: 676.25 samples/sec
+  Wall time:  2833.41 sec
+  Throughput: 441.16 samples/sec
 
 DDIM Training Preformance Results
-=================================
 =========== SUMMARY ===========
 Run 1:
   Wall time:  12715.62 sec
-  CPU time:   0.00 sec
-  Memory Î”:   0.00 MB
   Throughput: 196.61 samples/sec
 
 Run 2:
   Wall time:  12729.48 sec
-  CPU time:   0.00 sec
-  Memory Î”:   0.00 MB
   Throughput: 196.39 samples/sec
 
 Run 3:
   Wall time:  12717.83 sec
-  CPU time:   0.00 sec
-  Memory Î”:   0.00 MB
   Throughput: 196.57 samples/sec
 
 Run 4:
   Wall time:  12713.21 sec
-  CPU time:   0.00 sec
-  Memory Î”:   0.00 MB
   Throughput: 196.65 samples/sec
 
 Run 5:
   Wall time:  12713.06 sec
-  CPU time:   0.00 sec
-  Memory Î”:   0.00 MB
   Throughput: 196.65 samples/sec

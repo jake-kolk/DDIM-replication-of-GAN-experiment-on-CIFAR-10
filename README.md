@@ -28,7 +28,7 @@ I created a DCGAN model for mimicking the data distribution of CIFAR-10 dataset
 
 Alright this is the stuff written by Jake + Isaiah.
 
-## Download Dependencies
+### Download Dependencies
 
 ```bash
 python -m pip install -r requirements.txt
@@ -57,6 +57,30 @@ Flags you can tweak:
 
 The script now always saves checkpoints to `weights/`, sample grids to `output/`, and trains with the original DCGAN learning rate of 2e-4 so you don’t have to remember extra flags.
 
+### Train the GAN as done in experement
+#### Overview
+
+The script:
+- Runs `gan_cifar.py` five times.
+- Measures wall time for each training run.
+- Computes throughput using dataset size and number of epochs.
+- Writes results to `training_results.txt`.
+- Saves outputs to directories named `gan_<run_number>`.
+
+#### Requirements
+
+- Python 3.10  
+- A working `gan_cifar.py` script supporting:
+  `--epochs`, `--batch-size`, `--outputDir`
+- Required machine learning dependencies (e.g., PyTorch)
+
+#### Usage
+
+Execute the benchmark script:
+
+```bash
+python3.10 benchmark_gan.py
+```
 ### Generate GAN images without retraining
 
 ```bash
@@ -95,6 +119,35 @@ Flag guide:
 - `--resume`: continue from a saved checkpoint produced by this script.
 
 During training we always use deterministic DDIM sampling (`η = 0`) when writing preview grids so the results are easy to compare over time.
+
+### Train the DDIM as done in experement 
+#### DDIM Training Benchmark
+
+This script benchmarks the training performance of a DDIM model by running multiple training sessions and recording wall-clock time and throughput.
+
+#### Overview
+
+The script:
+- Runs `train_ddim.py` five times.
+- Measures wall time for each run.
+- Computes throughput based on dataset size and number of epochs.
+- Writes results to `training_results.txt`.
+- Saves checkpoints in `weights/ddim_<run_number>`.
+
+#### Requirements
+
+- Python 3.10  
+- A working `train_ddim.py` script supporting:
+  `--epochs`, `--batch-size`, `--ckpt-dir`, `--sample-dir`, `--accum-steps`
+- Required ML dependencies (e.g., PyTorch)
+
+#### Usage
+
+Run the benchmark script:
+
+```bash
+python3.10 benchmark_ddim.py
+```
 
 ### Generate images with a trained DDIM
 
