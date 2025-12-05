@@ -1,6 +1,9 @@
 import subprocess
+import sys
 
-for i in range(1, 6):  # 1, 2, 3, 4, 5
+for i in range(1, 6):
+    print(f"\n=== Running comparison for i={i} ===", flush=True)
+
     cmd = [
         "python3.10", "compare.py",
         "--ddim-checkpoint", f"weights/ddim_{i}/ddim_epoch_050.pth",
@@ -11,5 +14,9 @@ for i in range(1, 6):  # 1, 2, 3, 4, 5
         "--real-data", "cifar10"
     ]
 
-    print(f"\n=== Running comparison for i={i} ===")
-    subprocess.run(cmd, check=True)
+    subprocess.run(
+        cmd,
+        check=True,
+        stdout=sys.stdout,   # forwarded to out.txt
+        stderr=sys.stderr    # forwarded to out.txt
+    )
