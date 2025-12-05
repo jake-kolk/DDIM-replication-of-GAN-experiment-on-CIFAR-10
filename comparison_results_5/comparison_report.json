@@ -1,0 +1,48 @@
+{
+  "ddim_checkpoint": "weights/ddim_5/ddim_epoch_050.pth",
+  "gan_checkpoint": "weights/gan_5/weights/netG_epoch_24.pth",
+  "metadata": {
+    "ddim_keys": [
+      "model",
+      "optimizer",
+      "epoch",
+      "global_step",
+      "config"
+    ],
+    "gan_keys": [
+      "main.0.weight",
+      "main.1.weight",
+      "main.1.bias",
+      "main.1.running_mean",
+      "main.1.running_var",
+      "main.1.num_batches_tracked",
+      "main.3.weight",
+      "main.4.weight",
+      "main.4.bias",
+      "main.4.running_mean",
+      "main.4.running_var",
+      "main.4.num_batches_tracked",
+      "main.6.weight",
+      "main.7.weight",
+      "main.7.bias",
+      "main.7.running_mean",
+      "main.7.running_var",
+      "main.7.num_batches_tracked",
+      "main.9.weight",
+      "main.10.weight",
+      "main.10.bias",
+      "main.10.running_mean",
+      "main.10.running_var",
+      "main.10.num_batches_tracked",
+      "main.12.weight"
+    ]
+  },
+  "ddim_sampling_time_s": 1145.7555663950043,
+  "ddim_samples_saved_dir": "comparison_results_5/ddim_samples",
+  "gan_sampling_time_s": 10.96233251898957,
+  "gan_samples_saved_dir": "comparison_results_5/gan_samples",
+  "ddim_per_image_s": 0.11457555663950043,
+  "gan_per_image_s": 0.001096233251898957,
+  "fid_ddim": 41.91641240153041,
+  "fid_gan": 58.92524524366428
+}
