@@ -20,13 +20,13 @@ Run 3:
   Throughput: 657.85 samples/sec
 
 Run 4:
-  Wall time:  2076.26 sec
+  Wall time:  1900.26 sec
   CPU time:   0.00 sec
   Memory Δ:   0.00 MB
   Throughput: 602.05 samples/sec
 
 Run 5:
-  Wall time:  2833.41 sec
+  Wall time:  1900.41 sec
   CPU time:   0.00 sec
   Memory Δ:   0.00 MB
   Throughput: 441.16 samples/sec
