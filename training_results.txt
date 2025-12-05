@@ -1,4 +1,4 @@
-DISCLAMER: These run times are not exact, I had some parallel tasks running for some of the later training runs so I just put some data that looked about right based on the training runs 
+DISCLAMER: These run times GAN are not exact, I had some parallel tasks running for some of the later training runs so I just put some data that looked about right based on the training runs 
 with no parallel tasks. The precision of these numbers is not important, we are just seeing AROUND how fast training is from one to the other. All other data is accurate unless 
 said otherwise.
 
