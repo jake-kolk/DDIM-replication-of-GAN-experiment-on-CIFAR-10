@@ -31,3 +31,35 @@ Run 5:
   Memory Δ:   0.00 MB
   Throughput: 441.16 samples/sec
 
+DDIM Training Preformance Results
+=================================
+=========== SUMMARY ===========
+Run 1:
+  Wall time:  12715.62 sec
+  CPU time:   0.00 sec
+  Memory Î”:   0.00 MB
+  Throughput: 196.61 samples/sec
+
+Run 2:
+  Wall time:  12729.48 sec
+  CPU time:   0.00 sec
+  Memory Î”:   0.00 MB
+  Throughput: 196.39 samples/sec
+
+Run 3:
+  Wall time:  12717.83 sec
+  CPU time:   0.00 sec
+  Memory Î”:   0.00 MB
+  Throughput: 196.57 samples/sec
+
+Run 4:
+  Wall time:  12713.21 sec
+  CPU time:   0.00 sec
+  Memory Î”:   0.00 MB
+  Throughput: 196.65 samples/sec
+
+Run 5:
+  Wall time:  12713.06 sec
+  CPU time:   0.00 sec
+  Memory Î”:   0.00 MB
+  Throughput: 196.65 samples/sec
